@@ -6,11 +6,14 @@ import Image from "next/image";
 import Navbar from "../components/Navbar";
 import { useQuery } from "react-query";
 import axios from "axios";
-import { parseISO, format } from "date-fns";
 import { fi } from "date-fns/locale";
 import { convertKelvinToCelsius } from "@/utils/convertKelvinToCelsius";
 import WeatherIcon from "@/components/WeatherIcon";
 import { getDayOrNightIcon } from "@/utils/getDayOrNightIcon";
+import WeatherDetails from "@/components/WeatherDetails";
+import { metersToKilometers } from "@/utils/metersToKilometers";
+import { convertWindSpeed } from "@/utils/convertWindSpeed";
+import { format, fromUnixTime, parseISO } from "date-fns";
 
 
 interface WeatherData {
@@ -152,10 +155,40 @@ export default function Home() {
                   </div>
             </Container>
           </div>
+           <div className=" flex gap-4">
+              {/* left  */}
+                <Container className="w-fit  justify-center flex-col px-4 items-center ">
+                  <p className=" capitalize text-center">
+                    {firstData?.weather[0].description}{" "}
+                  </p>
+                  <WeatherIcon
+                    iconName={getDayOrNightIcon(
+                      firstData?.weather[0].icon ?? "",
+                      firstData?.dt_txt ?? ""
+                    )}
+                  />
+                </Container>
+              {/* right  */}
+                <Container className="bg-yellow-300/80  px-6 gap-4 justify-between overflow-x-auto">
+                  <WeatherDetails
+                    visability={metersToKilometers(firstData?.visibility ?? 10000
+                    )}
+                    airPressure={`${firstData?.main.pressure} hPa`}
+                    humidity={`${firstData?.main.humidity}%`}
+                    sunrise={format(fromUnixTime(data?.city.sunrise ?? 1707286934),"H:mm"
+                    )}
+                    sunset={format(fromUnixTime(data?.city.sunset ?? 1707317191),"H:mm"
+                    )}
+                    windSpeed={convertWindSpeed(firstData?.wind.speed ?? 2.59)}
+                  />
+                </Container>
+           </div>
         </section>
 
         {/* 7 day forecast data */}
-        <section></section>
+        <section className="flex w-full flex-col gap-4">      
+        <p className="text-2xl">Forcast (7 days) - viikon sää</p>
+        </section>
       </main>
     </div>
   );   
